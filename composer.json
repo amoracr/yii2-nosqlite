@@ -1,0 +1,22 @@
+{
+    "name": "amoracr/yii2-nosqlite",
+    "description": "A NoSQL Database, with the portability of SQLite ",
+    "type": "yii2-extension",
+    "keywords": ["yii2", "extension", "NoSQL", "SQLite"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alonso Mora",
+            "email": "adelfunscr@gmail.com",
+            "role": "Creator"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "amoracr\\nosqlite\\": ""
+        }
+    }
+}
