@@ -1,8 +1,9 @@
 {
     "name": "amoracr/yii2-nosqlite",
-    "description": "A NoSQL Database, with the portability of SQLite ",
+    "description": "A NoSQL Database, with the portability of SQLite for Yii2 applications",
     "type": "yii2-extension",
     "keywords": ["yii2", "extension", "NoSQL", "SQLite"],
+    "homepage": "https://github.com/amoracr/yii2-nosqlite",
     "license": "MIT",
     "authors": [
         {
@@ -11,12 +12,25 @@
             "role": "Creator"
         }
     ],
+    "support": {
+        "issues": "https://github.com/amoracr/yii2-nosqlite/issues",
+        "source": "https://github.com/amoracr/yii2-nosqlite"
+    },
     "require": {
+        "php": "^5.6.0 || ^7.0",
+        "ext-pdo": "*",
+        "ext-sqlite3": ">=3.5",
         "yiisoft/yii2": "~2.0.0"
     },
     "autoload": {
         "psr-4": {
-            "amoracr\\nosqlite\\": ""
+            "amoracr\\nosqlite\\": "src"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
 }
