@@ -27,5 +27,6 @@ Thumbs.db
 .DS_Store
 # Composer
 
+### Composer ###
 composer.phar
 /vendor/
