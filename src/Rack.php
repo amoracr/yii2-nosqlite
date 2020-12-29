@@ -81,7 +81,8 @@ class Rack
 
     public function selectShelf($shelfname)
     {
-        
+        $this->createShelf($shelfname);
+        return $this->shelves[$shelfname];
     }
 
 }
