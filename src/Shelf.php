@@ -20,6 +20,8 @@ class Shelf
     public $database;
     public $name;
     protected $selectFields = [];
+    protected $tables = [];
+    protected $groupBy = [];
     protected $distinct = false;
 
     public function __construct($name, &$database)
@@ -86,13 +88,40 @@ class Shelf
         return $this;
     }
 
+    public function countGroupBy($fields = [])
+    {
+        foreach ($fields as $key => $field) {
+            if (is_string($key)) {
+                $alias = $key;
+            } else {
+                $alias = str_replace('.', '_', $field);
+            }
+            $countAlias = 'count_';
+            $countAlias .= $alias;
+            $column = sprintf("json_extract(document, '$.%s') AS %s", $field, $alias);
+            $this->selectFields[$alias] = $column;
+            $this->selectFields[$countAlias] = "COUNT(*) AS $countAlias";
+            if (!in_array($alias, $this->groupBy)) {
+                array_push($this->groupBy, $alias);
+            }
+        }
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
         $distinct = $this->distinct ? 'DISTINCT' : '';
         $select = implode(',', $this->selectFields);
         $columns = array_keys($this->selectFields);
-        $query = sprintf("SELECT %s %s FROM %s", $distinct, $select, $this->name);
+        if (empty($this->tables)) {
+            array_push($this->tables, $this->name);
+        }
+        $from = implode(',', $this->tables);
+        $query = sprintf("SELECT %s %s FROM %s ", $distinct, $select, $from);
+        if (!empty($this->groupBy)) {
+            $query .= "GROUP BY " . implode(',', $this->groupBy);
+        }
         $rows = $this->database->query($query);
         foreach ($rows as $row) {
             $item = [];
