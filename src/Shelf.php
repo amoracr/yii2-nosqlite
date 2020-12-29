@@ -109,10 +109,11 @@ class Shelf
         return $this;
     }
 
-    public function whereEquals($field, $search){
-         $conditions = sprintf("json_extract(document, '$.%s') = '%s'", $field, $search);
-         array_push($this->conditions,$conditions);
-         return $this;
+    public function whereEquals($field, $search)
+    {
+        $conditions = sprintf("json_extract(document, '$.%s') = '%s'", $field, $search);
+        array_push($this->conditions, $conditions);
+        return $this;
     }
 
     public function fetch()
@@ -126,9 +127,9 @@ class Shelf
         }
         $from = implode(',', $this->tables);
         $query = sprintf("SELECT %s %s FROM %s ", $distinct, $select, $from);
-        if(!empty($this->conditions)){
-            $query .= "WHERE ".implode(' AND ', $this->conditions);
-            $query.=" ";
+        if (!empty($this->conditions)) {
+            $query .= "WHERE " . implode(' AND ', $this->conditions);
+            $query .= " ";
         }
         if (!empty($this->groupBy)) {
             $query .= "GROUP BY " . implode(',', $this->groupBy);
@@ -141,7 +142,17 @@ class Shelf
             }
             array_push($result, $item);
         }
+        $this->clean();
         return $result;
+    }
+
+    protected function clean()
+    {
+        $this->selectFields = [];
+        $this->tables = [];
+        $this->conditions = [];
+        $this->groupBy = [];
+        $this->distinct = false;
     }
 
 }
