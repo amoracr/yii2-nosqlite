@@ -46,14 +46,16 @@ class Shelf
 
     public function select($fields = [])
     {
-        foreach ($fields as $alias => $field) {
-            if (is_string($alias)) {
-                $column = sprintf("json_extract(document, '$.%s') AS %s ", $field, $alias);
-                $this->select[$alias] = $column;
+        foreach ($fields as $key => $field) {
+            if (is_string($key)) {
+                $alias = $key;
             } else {
-                $column = sprintf("json_extract(document, '$.%s') AS %s", $field, $field);
-                $this->select[$field] = $column;
+                $tmp = sprintf('$.%s', $field);
+                $path = explode('.', $tmp);
+                $alias = end($path);
             }
+            $column = sprintf("json_extract(document, '$.%s') AS %s ", $field, $alias);
+            $this->select[$alias] = $column;
         }
 
         return $this;
@@ -79,7 +81,7 @@ class Shelf
             foreach ($columns as $key) {
                 $item[$key] = $row[$key];
             }
-            array_push($result,$item);
+            array_push($result, $item);
         }
         return $result;
     }
