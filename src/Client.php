@@ -45,7 +45,8 @@ class Client
 
     public function selectRack($rackname)
     {
-        
+        $dnsRack = sprintf('%s' . DIRECTORY_SEPARATOR . '%s.nosqlite', $this->path, $rackname);
+        return new Rack($dnsRack);
     }
 
     public function selectShelf($rackname, $shelfname)
