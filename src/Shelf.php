@@ -116,6 +116,14 @@ class Shelf
         return $this;
     }
 
+    public function whereLike($field, $search)
+    {
+        $conditions = sprintf("json_extract(document, '$.%s') LIKE ", $field, $search);
+        $conditions .= "'%$search%' ";
+        array_push($this->conditions, $conditions);
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
