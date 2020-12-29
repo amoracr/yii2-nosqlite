@@ -39,10 +39,9 @@ class Shelf
     public function count()
     {
         $query = sprintf("SELECT COUNT(*) AS count FROM `%s`", $this->name);
-        $rows = $this->database->query($query);
-        $row = $rows->fetchArray();
-        $numRows = $row['count'];
-        return $numRows;
+        $result = $this->database->query($query);
+        $numRows = $result->fetchColumn();
+        return (int) $numRows;
     }
 
     public function select($fields = [])
@@ -63,25 +62,26 @@ class Shelf
     public function selectDistinct($fields = [])
     {
         $this->distinct = true;
+        $this->select($fields);
         return $this;
     }
 
     public function fetch()
     {
-        $dataset = [];
+        $result = [];
         $distinct = $this->distinct ? 'DISTINCT' : '';
         $select = implode(',', $this->select);
         $columns = array_keys($this->select);
         $query = sprintf("SELECT %s %s FROM %s", $distinct, $select, $this->name);
-        $results = $db->query($query);
-        while ($row = $results->fetchArray()) {
+        $rows = $this->database->query($query);
+        foreach ($rows as $row) {
             $item = [];
             foreach ($columns as $key) {
                 $item[$key] = $row[$key];
             }
-            array_push($dataset, $item);
+            array_push($result,$item);
         }
-        return $dataset;
+        return $result;
     }
 
 }
