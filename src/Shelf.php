@@ -21,6 +21,7 @@ class Shelf
     public $name;
     protected $selectFields = [];
     protected $tables = [];
+    protected $conditions = [];
     protected $groupBy = [];
     protected $distinct = false;
 
@@ -108,6 +109,12 @@ class Shelf
         return $this;
     }
 
+    public function whereEquals($field, $search){
+         $conditions = sprintf("json_extract(document, '$.%s') = '%s'", $field, $search);
+         array_push($this->conditions,$conditions);
+         return $this;
+    }
+
     public function fetch()
     {
         $result = [];
@@ -119,6 +126,10 @@ class Shelf
         }
         $from = implode(',', $this->tables);
         $query = sprintf("SELECT %s %s FROM %s ", $distinct, $select, $from);
+        if(!empty($this->conditions)){
+            $query .= "WHERE ".implode(' AND ', $this->conditions);
+            $query.=" ";
+        }
         if (!empty($this->groupBy)) {
             $query .= "GROUP BY " . implode(',', $this->groupBy);
         }
