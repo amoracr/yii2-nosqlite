@@ -37,6 +37,9 @@ class Rack
         $this->dbPath = Yii::getAlias($path);
         $dns = sprintf("sqlite:%s", $this->dbPath);
         $this->connection = new PDO($dns, null, null, $options);
+        $this->connection->exec('PRAGMA journal_mode = MEMORY');
+        $this->connection->exec('PRAGMA synchronous = OFF');
+        $this->connection->exec('PRAGMA PAGE_SIZE = 4096');
     }
 
     public function drop()
