@@ -10,6 +10,8 @@
 namespace amoracr\nosqlite;
 
 use amoracr\nosqlite\Rack;
+use yii;
+use \DirectoryIterator;
 
 /**
  *
@@ -21,8 +23,9 @@ class Client
 {
 
     protected $path;
+    protected $racks = [];
 
-    public function __construct($path = Rack::DSN_PATH_MEMORY)
+    public function __construct($path)
     {
         $this->setPath($path);
     }
@@ -34,24 +37,36 @@ class Client
 
     public function createRack($rackname)
     {
-        $dnsRack = sprintf('%s' . DIRECTORY_SEPARATOR . '%s.nosqlite', $this->path, $rackname);
-        $rack = new Rack($dnsRack);
+        if (!array_key_exists($rackname, $this->racks)) {
+            $dnsRack = sprintf('%s' . DIRECTORY_SEPARATOR . '%s.nosqlite', $this->path, $rackname);
+            $this->racks[$rackname] = new Rack($dnsRack);
+        }
     }
 
     public function listRacks()
     {
-        
+        $path = Yii::getAlias($this->path);
+        $racks = [];
+        foreach (new DirectoryIterator($path) as $fileInfo) {
+            if ($fileInfo->getExtension() === 'nosqlite') {
+                $racks[] = $fileInfo->getBasename('.nosqlite');
+            }
+        }
+
+        return $racks;
     }
 
     public function selectRack($rackname)
     {
-        $dnsRack = sprintf('%s' . DIRECTORY_SEPARATOR . '%s.nosqlite', $this->path, $rackname);
-        return new Rack($dnsRack);
+        if (!array_key_exists($rackname, $this->racks)) {
+            $this->createRack($rackname);
+        }
+        return $this->racks[$rackname];
     }
 
     public function selectShelf($rackname, $shelfname)
     {
-        
+        return $this->selectRack($rackname)->selectShelf($shelfname);
     }
 
 }
