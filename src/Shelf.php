@@ -19,7 +19,7 @@ class Shelf
 
     public $database;
     public $name;
-    protected $select = [];
+    protected $selectFields = [];
     protected $distinct = false;
 
     public function __construct($name, &$database)
@@ -55,7 +55,7 @@ class Shelf
                 $alias = end($path);
             }
             $column = sprintf("json_extract(document, '$.%s') AS %s ", $field, $alias);
-            $this->select[$alias] = $column;
+            $this->selectFields[$alias] = $column;
         }
 
         return $this;
@@ -80,7 +80,7 @@ class Shelf
                 $alias .= end($path);
             }
             $column = sprintf("json_array_length(document, '$.%s') AS %s ", $field, $alias);
-            $this->select[$alias] = $column;
+            $this->selectFields[$alias] = $column;
         }
 
         return $this;
@@ -90,8 +90,8 @@ class Shelf
     {
         $result = [];
         $distinct = $this->distinct ? 'DISTINCT' : '';
-        $select = implode(',', $this->select);
-        $columns = array_keys($this->select);
+        $select = implode(',', $this->selectFields);
+        $columns = array_keys($this->selectFields);
         $query = sprintf("SELECT %s %s FROM %s", $distinct, $select, $this->name);
         $rows = $this->database->query($query);
         foreach ($rows as $row) {
