@@ -10,6 +10,7 @@
 namespace amoracr\nosqlite;
 
 use yii;
+use yii\helpers\FileHelper;
 use \PDO;
 
 /**
@@ -43,7 +44,7 @@ class Rack
     public function drop()
     {
         if (file_exists($this->dbPath)) {
-            @unlink($this->dbPath);
+            FileHelper::unlink($this->dbPath);
         }
     }
 
