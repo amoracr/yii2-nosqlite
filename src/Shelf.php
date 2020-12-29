@@ -68,6 +68,24 @@ class Shelf
         return $this;
     }
 
+    public function countNested($nestedFields = [])
+    {
+        foreach ($nestedFields as $key => $field) {
+            if (is_string($key)) {
+                $alias = $key;
+            } else {
+                $tmp = sprintf('$.%s', $field);
+                $path = explode('.', $tmp);
+                $alias = 'count_';
+                $alias .= end($path);
+            }
+            $column = sprintf("json_array_length(document, '$.%s') AS %s ", $field, $alias);
+            $this->select[$alias] = $column;
+        }
+
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
