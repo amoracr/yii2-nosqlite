@@ -127,28 +127,21 @@ class Shelf
     public function fetch()
     {
         $result = [];
-        $distinct = $this->distinct ? 'DISTINCT' : '';
-        $select = implode(',', $this->selectFields);
-        $columns = array_keys($this->selectFields);
-        if (empty($this->tables)) {
-            array_push($this->tables, $this->name);
-        }
-        $from = implode(',', $this->tables);
-        $query = sprintf("SELECT %s %s FROM %s ", $distinct, $select, $from);
-        if (!empty($this->conditions)) {
-            $query .= "WHERE " . implode(' AND ', $this->conditions);
-            $query .= " ";
-        }
-        if (!empty($this->groupBy)) {
-            $query .= "GROUP BY " . implode(',', $this->groupBy);
-        }
+        $query = $this->prepareFetchQuery();
         $rows = $this->database->query($query);
-        foreach ($rows as $row) {
-            $item = [];
-            foreach ($columns as $key) {
-                $item[$key] = $row[$key];
+        if (empty($this->selectFields)) {
+            foreach ($rows as $row) {
+                array_push($result, $row);
             }
-            array_push($result, $item);
+        } else {
+            $columns = array_keys($this->selectFields);
+            foreach ($rows as $row) {
+                $item = [];
+                foreach ($columns as $key) {
+                    $item[$key] = $row[$key];
+                }
+                array_push($result, $item);
+            }
         }
         $this->clean();
         return $result;
@@ -161,6 +154,25 @@ class Shelf
         $this->conditions = [];
         $this->groupBy = [];
         $this->distinct = false;
+    }
+
+    protected function prepareFetchQuery()
+    {
+        $distinct = $this->distinct ? 'DISTINCT' : '';
+        $select = !empty($this->selectFields) ? implode(',', $this->selectFields) : '*';
+        if (empty($this->tables)) {
+            array_push($this->tables, $this->name);
+        }
+        $from = implode(',', $this->tables);
+        $query = sprintf("SELECT %s %s FROM %s ", $distinct, $select, $from);
+        if (!empty($this->conditions)) {
+            $query .= "WHERE " . implode(' AND ', $this->conditions);
+            $query .= " ";
+        }
+        if (!empty($this->groupBy)) {
+            $query .= "GROUP BY " . implode(',', $this->groupBy);
+        }
+        return $query;
     }
 
 }
