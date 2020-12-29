@@ -36,7 +36,7 @@ class Shelf
         $stm->execute();
     }
 
-    public function count()
+    public function countDocuments()
     {
         $query = sprintf("SELECT COUNT(*) AS count FROM `%s`", $this->name);
         $result = $this->database->query($query);
