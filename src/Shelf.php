@@ -142,6 +142,17 @@ class Shelf
         return $this;
     }
 
+    public function whereNotIn($field, $values = [])
+    {
+        $list = array_map(function($element) {
+            return "'$element'";
+        }, $values);
+        $list = implode(',', $list);
+        $condition = sprintf("json_extract(document, '$.%s') NOT IN ( %s )", $field, $list);
+        array_push($this->conditions, $condition);
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
