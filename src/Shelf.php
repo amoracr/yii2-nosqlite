@@ -24,6 +24,7 @@ class Shelf
     protected $andConditions = [];
     protected $groupBy = [];
     protected $distinct = false;
+    protected $query;
 
     public function __construct($name, &$database)
     {
@@ -153,11 +154,19 @@ class Shelf
         return $this;
     }
 
+    public function customQuery($query = '')
+    {
+        $this->query = $query;
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
-        $query = $this->prepareFetchQuery();
-        $rows = $this->database->query($query);
+        if (empty($this->query)) {
+            $this->prepareFetchQuery();
+        }
+        $rows = $this->database->query($this->query);
         if (empty($this->selectFields)) {
             foreach ($rows as $row) {
                 array_push($result, $row);
@@ -183,6 +192,7 @@ class Shelf
         $this->andConditions = [];
         $this->groupBy = [];
         $this->distinct = false;
+        $this->query = '';
     }
 
     protected function prepareFetchQuery()
@@ -201,7 +211,7 @@ class Shelf
         if (!empty($this->groupBy)) {
             $query .= "GROUP BY " . implode(',', $this->groupBy);
         }
-        return $query;
+        $this->query = $query;
     }
 
 }
