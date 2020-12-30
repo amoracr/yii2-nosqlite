@@ -21,7 +21,7 @@ class Shelf
     public $name;
     protected $selectFields = [];
     protected $tables = [];
-    protected $conditions = [];
+    protected $andConditions = [];
     protected $groupBy = [];
     protected $distinct = false;
 
@@ -112,7 +112,7 @@ class Shelf
     public function whereEquals($field, $search)
     {
         $condition = sprintf("json_extract(document, '$.%s') = '%s'", $field, $search);
-        array_push($this->conditions, $condition);
+        array_push($this->andConditions, $condition);
         return $this;
     }
 
@@ -120,14 +120,14 @@ class Shelf
     {
         $condition = sprintf("json_extract(document, '$.%s') LIKE ", $field, $search);
         $condition .= "'%$search%' ";
-        array_push($this->conditions, $condition);
+        array_push($this->andConditions, $condition);
         return $this;
     }
 
     public function whereBetween($field, $bottom = 0, $top = 1)
     {
         $condition = sprintf("json_extract(document, '$.%s') BETWEEN  %d AND %d ", $field, $bottom, $top);
-        array_push($this->conditions, $condition);
+        array_push($this->andConditions, $condition);
         return $this;
     }
 
@@ -138,7 +138,7 @@ class Shelf
         }, $values);
         $list = implode(',', $list);
         $condition = sprintf("json_extract(document, '$.%s') IN ( %s )", $field, $list);
-        array_push($this->conditions, $condition);
+        array_push($this->andConditions, $condition);
         return $this;
     }
 
@@ -149,7 +149,7 @@ class Shelf
         }, $values);
         $list = implode(',', $list);
         $condition = sprintf("json_extract(document, '$.%s') NOT IN ( %s )", $field, $list);
-        array_push($this->conditions, $condition);
+        array_push($this->andConditions, $condition);
         return $this;
     }
 
@@ -180,7 +180,7 @@ class Shelf
     {
         $this->selectFields = [];
         $this->tables = [];
-        $this->conditions = [];
+        $this->andConditions = [];
         $this->groupBy = [];
         $this->distinct = false;
     }
@@ -194,8 +194,8 @@ class Shelf
         }
         $from = implode(',', $this->tables);
         $query = sprintf("SELECT %s %s FROM %s ", $distinct, $select, $from);
-        if (!empty($this->conditions)) {
-            $query .= "WHERE " . implode(' AND ', $this->conditions);
+        if (!empty($this->andConditions)) {
+            $query .= "WHERE " . implode(' AND ', $this->andConditions);
             $query .= " ";
         }
         if (!empty($this->groupBy)) {
