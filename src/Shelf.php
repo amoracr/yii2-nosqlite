@@ -124,6 +124,13 @@ class Shelf
         return $this;
     }
 
+    public function whereBetween($field, $bottom = 0, $top = 1)
+    {
+        $conditions = sprintf("json_extract(document, '$.%s') BETWEEN  %d AND %d ", $field, $bottom, $top);
+        array_push($this->conditions, $conditions);
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
