@@ -131,6 +131,17 @@ class Shelf
         return $this;
     }
 
+    public function whereIn($field, $values = [])
+    {
+        $list = array_map(function($element) {
+            return "'$element'";
+        }, $values);
+        $list = implode(',', $list);
+        $condition = sprintf("json_extract(document, '$.%s') IN ( %s )", $field, $list);
+        array_push($this->conditions, $condition);
+        return $this;
+    }
+
     public function fetch()
     {
         $result = [];
