@@ -111,23 +111,23 @@ class Shelf
 
     public function whereEquals($field, $search)
     {
-        $conditions = sprintf("json_extract(document, '$.%s') = '%s'", $field, $search);
-        array_push($this->conditions, $conditions);
+        $condition = sprintf("json_extract(document, '$.%s') = '%s'", $field, $search);
+        array_push($this->conditions, $condition);
         return $this;
     }
 
     public function whereLike($field, $search)
     {
-        $conditions = sprintf("json_extract(document, '$.%s') LIKE ", $field, $search);
-        $conditions .= "'%$search%' ";
-        array_push($this->conditions, $conditions);
+        $condition = sprintf("json_extract(document, '$.%s') LIKE ", $field, $search);
+        $condition .= "'%$search%' ";
+        array_push($this->conditions, $condition);
         return $this;
     }
 
     public function whereBetween($field, $bottom = 0, $top = 1)
     {
-        $conditions = sprintf("json_extract(document, '$.%s') BETWEEN  %d AND %d ", $field, $bottom, $top);
-        array_push($this->conditions, $conditions);
+        $condition = sprintf("json_extract(document, '$.%s') BETWEEN  %d AND %d ", $field, $bottom, $top);
+        array_push($this->conditions, $condition);
         return $this;
     }
 
